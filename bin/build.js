@@ -10,13 +10,14 @@ const argv = yargs(hideBin(process.argv)).argv;
 
 process.env.NODE_ENV = "production";
 
-console.log("BUILDING...");
+console.log("BUILDING test...");
 
 const resolveConfig = async (passedConfig) => {
   let config;
 
   if (passedConfig) {
     config = await import(pathToFileURL(passedConfig));
+    config = config.default;
   } else {
     config = require("../webpack.config");
   }
@@ -24,34 +25,38 @@ const resolveConfig = async (passedConfig) => {
   return config;
 };
 
-const config = resolveConfig(argv.config);
+const t = async () => {
+  const config = await resolveConfig(argv.config);
 
-console.log(config);
+  console.log(JSON.stringify(config, null, 4));
 
-webpack(config).run((err, stats) => {
-  if (err) {
-    console.error(err.stack || err);
-    if (err.details) {
-      console.error(err.details.join("\n\n"));
+  webpack(config).run((err, stats) => {
+    if (err) {
+      console.error(err.stack || err);
+      if (err.details) {
+        console.error(err.details.join("\n\n"));
+      }
+      return;
     }
-    return;
-  }
 
-  console.log(
-    stats.toString({
-      chunks: true,
-      colors: true,
-      children: true,
-    })
-  );
+    console.log(
+      stats.toString({
+        chunks: true,
+        colors: true,
+        children: true,
+      })
+    );
 
-  // if (stats.hasErrors()) {
-  //   console.log("test");
-  //   console.error(info.errors.join("\n\n"));
-  // }
+    // if (stats.hasErrors()) {
+    //   console.log("test");
+    //   console.error(info.errors.join("\n\n"));
+    // }
 
-  // if (stats.hasWarnings()) {
-  //   console.log("test2");
-  //   console.warn(info.warnings.join("\n\n"));
-  // }
-});
+    // if (stats.hasWarnings()) {
+    //   console.log("test2");
+    //   console.warn(info.warnings.join("\n\n"));
+    // }
+  });
+};
+
+t();
