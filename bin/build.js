@@ -28,8 +28,6 @@ const resolveConfig = async (passedConfig) => {
 const t = async () => {
   const config = await resolveConfig(argv.config);
 
-  console.log(JSON.stringify(config, null, 4));
-
   webpack(config).run((err, stats) => {
     if (err) {
       console.error(err.stack || err);
